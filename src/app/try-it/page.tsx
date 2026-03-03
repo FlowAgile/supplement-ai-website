@@ -1,0 +1,385 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+
+export default function TryItPage() {
+  const [formData, setFormData] = useState({
+    vehicleYear: "",
+    vehicleMake: "",
+    vehicleModel: "",
+    vin: "",
+    insuranceCompany: "",
+    claimNumber: "",
+    shopName: "",
+    estimatorName: "",
+    initialEstimate: "",
+    damageDescription: "",
+    damageAreas: "",
+  });
+
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [supplement, setSupplement] = useState("");
+  const [error, setError] = useState("");
+  const [generationTime, setGenerationTime] = useState(0);
+
+  function handleChange(
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  }
+
+  async function handleGenerate(e: React.FormEvent) {
+    e.preventDefault();
+    setIsGenerating(true);
+    setError("");
+    setSupplement("");
+    const startTime = Date.now();
+
+    try {
+      const res = await fetch("/api/generate-supplement", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Failed to generate supplement.");
+        return;
+      }
+
+      setSupplement(data.supplement);
+      setGenerationTime(Math.round((Date.now() - startTime) / 1000));
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
+  }
+
+  function handleCopy() {
+    navigator.clipboard.writeText(supplement);
+  }
+
+  return (
+    <>
+      <section className="bg-gradient-to-b from-brand-950 to-brand-900 text-white py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 bg-green-500/20 border border-green-400/30 rounded-full px-4 py-1.5 mb-4">
+              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+              <span className="text-sm text-green-200">Live AI — Real Results</span>
+            </div>
+            <h1 className="text-3xl md:text-5xl font-bold mb-4">
+              Try It With Your Repair
+            </h1>
+            <p className="text-lg text-blue-200 leading-relaxed">
+              Enter your actual vehicle and damage info below. Our AI will
+              generate a real supplement request — with OEM references,
+              justifications, and missed operations — in under 60 seconds.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-8 md:py-12 bg-gray-50 min-h-screen">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          {!supplement ? (
+            <form onSubmit={handleGenerate}>
+              <div className="bg-white border border-gray-200 rounded-xl p-6 md:p-8 shadow-sm mb-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <svg className="w-6 h-6 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                  </svg>
+                  Vehicle &amp; Claim Info
+                </h2>
+
+                <div className="grid md:grid-cols-3 gap-4 mb-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      Year *
+                    </label>
+                    <input
+                      type="text"
+                      name="vehicleYear"
+                      required
+                      value={formData.vehicleYear}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                      placeholder="2022"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      Make *
+                    </label>
+                    <select
+                      name="vehicleMake"
+                      required
+                      value={formData.vehicleMake}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white"
+                    >
+                      <option value="">Select</option>
+                      {["Acura","Audi","BMW","Buick","Cadillac","Chevrolet","Chrysler","Dodge","Ford","Genesis","GMC","Honda","Hyundai","Infiniti","Jaguar","Jeep","Kia","Land Rover","Lexus","Lincoln","Mazda","Mercedes-Benz","Mini","Mitsubishi","Nissan","Porsche","Ram","Rivian","Subaru","Tesla","Toyota","Volkswagen","Volvo","Other"].map((make) => (
+                        <option key={make} value={make}>{make}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      Model *
+                    </label>
+                    <input
+                      type="text"
+                      name="vehicleModel"
+                      required
+                      value={formData.vehicleModel}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                      placeholder="Camry SE"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      VIN <span className="text-gray-400 font-normal">(optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="vin"
+                      value={formData.vin}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                      placeholder="4T1G11AK8NU000000"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      Insurance Company *
+                    </label>
+                    <select
+                      name="insuranceCompany"
+                      required
+                      value={formData.insuranceCompany}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white"
+                    >
+                      <option value="">Select</option>
+                      {["State Farm","GEICO","Progressive","Allstate","USAA","Liberty Mutual","Farmers","Nationwide","Travelers","American Family","Erie","Auto-Owners","Hartford","Safeco","Other"].map((ins) => (
+                        <option key={ins} value={ins}>{ins}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      Claim # <span className="text-gray-400 font-normal">(optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="claimNumber"
+                      value={formData.claimNumber}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                      placeholder="XX-XXXX-XXXX"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      Shop Name
+                    </label>
+                    <input
+                      type="text"
+                      name="shopName"
+                      value={formData.shopName}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                      placeholder="Your Shop Name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      Estimator Name
+                    </label>
+                    <input
+                      type="text"
+                      name="estimatorName"
+                      value={formData.estimatorName}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                      placeholder="Your Name"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white border border-gray-200 rounded-xl p-6 md:p-8 shadow-sm mb-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <svg className="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                  </svg>
+                  Repair Details
+                </h2>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      Initial Estimate Summary *
+                    </label>
+                    <textarea
+                      name="initialEstimate"
+                      required
+                      rows={3}
+                      value={formData.initialEstimate}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none resize-none"
+                      placeholder="What was on the initial estimate? Example: Right fender replacement, headlamp assembly, bumper cover repair and refinish. Total: $4,287"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      What did you find during teardown? *
+                    </label>
+                    <textarea
+                      name="damageDescription"
+                      required
+                      rows={4}
+                      value={formData.damageDescription}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none resize-none"
+                      placeholder="Describe in your own words what additional damage you found. Example: Found rail kink and apron buckle during teardown. Need to pull the rail back, fix the apron at shock tower. TSS radar is in the bumper area that got hit. Door next to fender needs blend."
+                    />
+                    <p className="text-xs text-gray-400 mt-1">
+                      Just describe it naturally — the AI handles the
+                      formatting, references, and justifications.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1">
+                      Damage Areas
+                    </label>
+                    <input
+                      type="text"
+                      name="damageAreas"
+                      value={formData.damageAreas}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
+                      placeholder="e.g. Front right structural, front right cosmetic, ADAS"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 text-red-700 text-sm">
+                  {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isGenerating}
+                className="w-full bg-brand-600 hover:bg-brand-700 disabled:bg-brand-400 text-white font-bold py-4 rounded-xl text-lg transition-colors flex items-center justify-center gap-3"
+              >
+                {isGenerating ? (
+                  <>
+                    <svg className="w-6 h-6 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Generating Supplement... (usually 15-45 seconds)
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Generate Supplement
+                  </>
+                )}
+              </button>
+            </form>
+          ) : (
+            <div>
+              {/* Success Banner */}
+              <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-bold text-green-800">
+                      Supplement Generated
+                    </p>
+                    <p className="text-sm text-green-600">
+                      Generated in {generationTime} seconds
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleCopy}
+                    className="text-sm bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium px-4 py-2 rounded-lg flex items-center gap-1.5"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    Copy to Clipboard
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSupplement("");
+                      setGenerationTime(0);
+                    }}
+                    className="text-sm text-gray-600 hover:text-gray-900 font-medium flex items-center gap-1"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    New Supplement
+                  </button>
+                </div>
+              </div>
+
+              {/* Generated Document */}
+              <div className="bg-white border border-gray-200 rounded-xl p-6 md:p-8 shadow-sm font-mono text-sm leading-relaxed whitespace-pre-wrap">
+                {supplement}
+              </div>
+
+              {/* CTA */}
+              <div className="bg-brand-50 border border-brand-200 rounded-xl p-8 mt-8 text-center">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  Imagine this for every repair.
+                </h3>
+                <p className="text-gray-600 mb-6 max-w-lg mx-auto">
+                  Professional supplements generated in seconds, every time.
+                  Stop leaving revenue on the table.
+                </p>
+                <Link
+                  href="/contact"
+                  className="inline-block bg-brand-600 hover:bg-brand-700 text-white font-bold px-8 py-3.5 rounded-lg text-lg transition-colors"
+                >
+                  Join the Pilot Program — Free for 30 Days
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+    </>
+  );
+}
