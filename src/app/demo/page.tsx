@@ -48,7 +48,7 @@ export default function DemoPage() {
               Live Demo
             </h1>
             <p className="text-lg text-blue-200 leading-relaxed">
-              See exactly what SupplementAI produces. Pick a repair scenario
+              See exactly what TeardownAI produces. Pick a repair scenario
               below, see the plain-language input from the estimator, then watch
               the AI generate a professional supplement request in seconds.
             </p>

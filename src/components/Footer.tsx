@@ -8,10 +8,10 @@ export default function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">S</span>
+                <span className="text-white font-bold text-sm">T</span>
               </div>
               <span className="font-bold text-xl text-white">
-                Supplement<span className="text-brand-400">AI</span>
+                Teardown<span className="text-brand-400">AI</span>
               </span>
             </div>
             <p className="text-sm leading-relaxed max-w-md">
@@ -51,8 +51,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="mailto:hello@supplementai.co" className="hover:text-white transition-colors">
-                  hello@supplementai.co
+                <a href="mailto:hello@teardownai.com" className="hover:text-white transition-colors">
+                  hello@teardownai.com
                 </a>
               </li>
             </ul>
@@ -60,7 +60,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-sm text-center">
-          &copy; {new Date().getFullYear()} SupplementAI. All rights reserved.
+          &copy; {new Date().getFullYear()} TeardownAI. All rights reserved.
         </div>
       </div>
     </footer>

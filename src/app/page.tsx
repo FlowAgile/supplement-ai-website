@@ -130,7 +130,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              How SupplementAI Works
+              How TeardownAI Works
             </h2>
             <p className="text-lg text-gray-600">
               Three simple steps. Professional supplement in under a minute.
@@ -252,14 +252,14 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Before vs. After SupplementAI
+              Before vs. After TeardownAI
             </h2>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             <div className="bg-white border-2 border-red-200 rounded-xl p-8">
               <p className="text-red-600 font-bold text-sm uppercase tracking-wider mb-4">
-                Without SupplementAI
+                Without TeardownAI
               </p>
               <ul className="space-y-3">
                 {[
@@ -283,7 +283,7 @@ export default function HomePage() {
 
             <div className="bg-white border-2 border-green-200 rounded-xl p-8">
               <p className="text-green-600 font-bold text-sm uppercase tracking-wider mb-4">
-                With SupplementAI
+                With TeardownAI
               </p>
               <ul className="space-y-3">
                 {[

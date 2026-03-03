@@ -45,7 +45,7 @@ export default function ContactPage() {
                 <a href="/demo" className="text-brand-600 font-semibold hover:underline">
                   live demo
                 </a>{" "}
-                to see what SupplementAI can do.
+                to see what TeardownAI can do.
               </p>
             </div>
           ) : (

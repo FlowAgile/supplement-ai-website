@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SupplementAI — AI-Powered Supplement Writing for Collision Repair Shops",
+  title: "TeardownAI — AI-Powered Supplement Writing for Collision Repair Shops",
   description:
     "Stop leaving money on the table. AI generates professional, OEM-referenced supplement requests in minutes. Built for independent collision repair shops.",
 };
