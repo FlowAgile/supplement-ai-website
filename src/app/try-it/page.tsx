@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 
 export default function TryItPage() {
@@ -23,12 +23,54 @@ export default function TryItPage() {
   const [error, setError] = useState("");
   const [generationTime, setGenerationTime] = useState(0);
 
+  // Upload state
+  const [estimateInputMode, setEstimateInputMode] = useState<"type" | "upload">("type");
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [uploadPreview, setUploadPreview] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   function handleChange(
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ["application/pdf", "image/png", "image/jpeg", "image/jpg", "image/webp"];
+    if (!validTypes.includes(file.type)) {
+      setError("Please upload a PDF, PNG, JPG, or WebP file.");
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      setError("File must be under 10MB.");
+      return;
+    }
+
+    setError("");
+    setUploadedFile(file);
+
+    // Show preview for images
+    if (file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = (ev) => setUploadPreview(ev.target?.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setUploadPreview("");
+    }
+  }
+
+  function handleRemoveFile() {
+    setUploadedFile(null);
+    setUploadPreview("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   async function handleGenerate(e: React.FormEvent) {
@@ -39,11 +81,36 @@ export default function TryItPage() {
     const startTime = Date.now();
 
     try {
-      const res = await fetch("/api/generate-supplement", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      let res: Response;
+
+      if (estimateInputMode === "upload" && uploadedFile) {
+        // Send as FormData with file
+        const fd = new FormData();
+        fd.append("estimateFile", uploadedFile);
+        fd.append("vehicleYear", formData.vehicleYear);
+        fd.append("vehicleMake", formData.vehicleMake);
+        fd.append("vehicleModel", formData.vehicleModel);
+        fd.append("vin", formData.vin);
+        fd.append("insuranceCompany", formData.insuranceCompany);
+        fd.append("claimNumber", formData.claimNumber);
+        fd.append("shopName", formData.shopName);
+        fd.append("estimatorName", formData.estimatorName);
+        fd.append("initialEstimate", "");
+        fd.append("damageDescription", formData.damageDescription);
+        fd.append("damageAreas", formData.damageAreas);
+
+        res = await fetch("/api/generate-supplement", {
+          method: "POST",
+          body: fd,
+        });
+      } else {
+        // Send as JSON (original behavior)
+        res = await fetch("/api/generate-supplement", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+      }
 
       const data = await res.json();
 
@@ -233,18 +300,113 @@ export default function TryItPage() {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">
-                      Initial Estimate Summary *
-                    </label>
-                    <textarea
-                      name="initialEstimate"
-                      required
-                      rows={3}
-                      value={formData.initialEstimate}
-                      onChange={handleChange}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none resize-none"
-                      placeholder="What was on the initial estimate? Example: Right fender replacement, headlamp assembly, bumper cover repair and refinish. Total: $4,287"
-                    />
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-sm font-semibold text-gray-700">
+                        Initial Estimate *
+                      </label>
+                      <div className="flex bg-gray-100 rounded-lg p-0.5">
+                        <button
+                          type="button"
+                          onClick={() => setEstimateInputMode("type")}
+                          className={`text-xs font-medium px-3 py-1.5 rounded-md transition-colors ${
+                            estimateInputMode === "type"
+                              ? "bg-white text-gray-900 shadow-sm"
+                              : "text-gray-500 hover:text-gray-700"
+                          }`}
+                        >
+                          Type It
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEstimateInputMode("upload")}
+                          className={`text-xs font-medium px-3 py-1.5 rounded-md transition-colors flex items-center gap-1 ${
+                            estimateInputMode === "upload"
+                              ? "bg-white text-gray-900 shadow-sm"
+                              : "text-gray-500 hover:text-gray-700"
+                          }`}
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                          </svg>
+                          Upload File
+                        </button>
+                      </div>
+                    </div>
+
+                    {estimateInputMode === "type" ? (
+                      <textarea
+                        name="initialEstimate"
+                        required={estimateInputMode === "type"}
+                        rows={3}
+                        value={formData.initialEstimate}
+                        onChange={handleChange}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none resize-none"
+                        placeholder="What was on the initial estimate? Example: Right fender replacement, headlamp assembly, bumper cover repair and refinish. Total: $4,287"
+                      />
+                    ) : (
+                      <div>
+                        {!uploadedFile ? (
+                          <label className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-brand-400 hover:bg-brand-50/30 transition-colors">
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                              <svg className="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                              </svg>
+                              <p className="text-sm text-gray-600 font-medium">
+                                Drop your estimate here or <span className="text-brand-600">browse</span>
+                              </p>
+                              <p className="text-xs text-gray-400 mt-1">
+                                PDF, PNG, JPG up to 10MB — screenshot or export from CCC, Mitchell, or Audatex
+                              </p>
+                            </div>
+                            <input
+                              ref={fileInputRef}
+                              type="file"
+                              className="hidden"
+                              accept=".pdf,.png,.jpg,.jpeg,.webp"
+                              onChange={handleFileChange}
+                            />
+                          </label>
+                        ) : (
+                          <div className="border border-green-200 bg-green-50 rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                  {uploadedFile.type === "application/pdf" ? (
+                                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                  ) : (
+                                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                  )}
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium text-green-800">{uploadedFile.name}</p>
+                                  <p className="text-xs text-green-600">
+                                    {(uploadedFile.size / 1024).toFixed(0)} KB — Ready to analyze
+                                  </p>
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={handleRemoveFile}
+                                className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                              >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            </div>
+                            {uploadPreview && (
+                              <div className="mt-3 rounded-lg overflow-hidden border border-green-200">
+                                <img src={uploadPreview} alt="Estimate preview" className="w-full max-h-48 object-contain bg-white" />
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div>

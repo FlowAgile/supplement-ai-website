@@ -35,20 +35,65 @@ IMPORTANT: Always check for these commonly missed operations and include them if
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const {
-      vehicleYear,
-      vehicleMake,
-      vehicleModel,
-      vin,
-      insuranceCompany,
-      claimNumber,
-      shopName,
-      estimatorName,
-      initialEstimate,
-      damageDescription,
-      damageAreas,
-    } = body;
+    const contentType = request.headers.get("content-type") || "";
+    let vehicleYear: string,
+      vehicleMake: string,
+      vehicleModel: string,
+      vin: string,
+      insuranceCompany: string,
+      claimNumber: string,
+      shopName: string,
+      estimatorName: string,
+      initialEstimate: string,
+      damageDescription: string,
+      damageAreas: string;
+    let estimateFileBase64: string | null = null;
+    let estimateFileMediaType: string | null = null;
+
+    if (contentType.includes("multipart/form-data")) {
+      // Handle file upload
+      const formData = await request.formData();
+      vehicleYear = (formData.get("vehicleYear") as string) || "";
+      vehicleMake = (formData.get("vehicleMake") as string) || "";
+      vehicleModel = (formData.get("vehicleModel") as string) || "";
+      vin = (formData.get("vin") as string) || "";
+      insuranceCompany = (formData.get("insuranceCompany") as string) || "";
+      claimNumber = (formData.get("claimNumber") as string) || "";
+      shopName = (formData.get("shopName") as string) || "";
+      estimatorName = (formData.get("estimatorName") as string) || "";
+      initialEstimate = (formData.get("initialEstimate") as string) || "";
+      damageDescription = (formData.get("damageDescription") as string) || "";
+      damageAreas = (formData.get("damageAreas") as string) || "";
+
+      const file = formData.get("estimateFile") as File | null;
+      if (file && file.size > 0) {
+        const buffer = await file.arrayBuffer();
+        estimateFileBase64 = Buffer.from(buffer).toString("base64");
+        // Map file type to Claude's expected media types
+        const typeMap: Record<string, string> = {
+          "application/pdf": "application/pdf",
+          "image/png": "image/png",
+          "image/jpeg": "image/jpeg",
+          "image/jpg": "image/jpeg",
+          "image/webp": "image/webp",
+        };
+        estimateFileMediaType = typeMap[file.type] || "image/png";
+      }
+    } else {
+      // Handle JSON (original behavior)
+      const body = await request.json();
+      vehicleYear = body.vehicleYear;
+      vehicleMake = body.vehicleMake;
+      vehicleModel = body.vehicleModel;
+      vin = body.vin;
+      insuranceCompany = body.insuranceCompany;
+      claimNumber = body.claimNumber;
+      shopName = body.shopName;
+      estimatorName = body.estimatorName;
+      initialEstimate = body.initialEstimate;
+      damageDescription = body.damageDescription;
+      damageAreas = body.damageAreas;
+    }
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
@@ -58,7 +103,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userPrompt = `Generate a complete, professional supplement request for this collision repair.
+    const estimateSection = estimateFileBase64
+      ? "See the uploaded estimate document/image attached below. Extract all line items, operations, labor, and totals from it."
+      : initialEstimate;
+
+    const userPromptText = `Generate a complete, professional supplement request for this collision repair.
 
 VEHICLE INFORMATION:
 - Year/Make/Model: ${vehicleYear} ${vehicleMake} ${vehicleModel}
@@ -71,7 +120,7 @@ CLAIM INFORMATION:
 - Estimator: ${estimatorName || "Estimator"}
 
 INITIAL ESTIMATE:
-${initialEstimate}
+${estimateSection}
 
 ADDITIONAL DAMAGE FOUND DURING TEARDOWN:
 ${damageDescription}
@@ -130,6 +179,38 @@ IMPORTANT RULES:
 - Estimate reasonable labor hours for each operation
 - Calculate and include a total additional dollar amount (use $85/hr body, $85/hr structural, $55/hr refinish, $95/hr mechanical, $150/hr ADAS as rough estimates)`;
 
+    // Build the message content — include image/PDF if uploaded
+    type ContentBlock =
+      | { type: "text"; text: string }
+      | { type: "image"; source: { type: "base64"; media_type: string; data: string } }
+      | { type: "document"; source: { type: "base64"; media_type: string; data: string } };
+
+    const messageContent: ContentBlock[] = [];
+
+    if (estimateFileBase64 && estimateFileMediaType) {
+      if (estimateFileMediaType === "application/pdf") {
+        messageContent.push({
+          type: "document",
+          source: {
+            type: "base64",
+            media_type: "application/pdf",
+            data: estimateFileBase64,
+          },
+        });
+      } else {
+        messageContent.push({
+          type: "image",
+          source: {
+            type: "base64",
+            media_type: estimateFileMediaType,
+            data: estimateFileBase64,
+          },
+        });
+      }
+    }
+
+    messageContent.push({ type: "text", text: userPromptText });
+
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
@@ -144,7 +225,7 @@ IMPORTANT RULES:
         messages: [
           {
             role: "user",
-            content: userPrompt,
+            content: messageContent,
           },
         ],
       }),
