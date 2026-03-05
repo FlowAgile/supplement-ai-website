@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TeardownAI Logo Preview</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f8fafc; color: #1e293b; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 40px 24px; }
+    h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+    .subtitle { color: #64748b; margin-bottom: 48px; }
+    .section { margin-bottom: 48px; }
+    .section h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; color: #334155; }
+    .section p { font-size: 14px; color: #94a3b8; margin-bottom: 20px; }
+    .preview-card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 40px; display: flex; align-items: center; justify-content: center; }
+    .preview-card.dark { background: linear-gradient(180deg, #1e3a8a 0%, #172554 100%); border-color: #1e3a8a; }
+    .preview-card img { max-width: 100%; height: auto; }
+    .sizes { display: flex; gap: 32px; align-items: flex-end; flex-wrap: wrap; }
+    .size-item { text-align: center; }
+    .size-label { font-size: 12px; color: #94a3b8; margin-top: 8px; }
+    .color-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+    .swatch { width: 80px; height: 60px; border-radius: 10px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px; }
+    .swatch span { font-size: 10px; font-weight: 600; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>TeardownAI Logo System</h1>
+    <p class="subtitle">Brand identity for AI-powered collision repair supplement writing</p>
+
+    <!-- Icon Mark -->
+    <div class="section">
+      <h2>Icon Mark</h2>
+      <p>Primary logo mark - the T-Scan icon. Bold "T" with amber scanning beam representing AI analysis.</p>
+      <div class="preview-card" style="background: #f1f5f9;">
+        <div class="sizes">
+          <div class="size-item">
+            <img src="logo-icon.svg" alt="Logo Icon 256px" width="256" height="256">
+            <div class="size-label">256px</div>
+          </div>
+          <div class="size-item">
+            <img src="logo-icon.svg" alt="Logo Icon 128px" width="128" height="128">
+            <div class="size-label">128px</div>
+          </div>
+          <div class="size-item">
+            <img src="logo-icon.svg" alt="Logo Icon 64px" width="64" height="64">
+            <div class="size-label">64px</div>
+          </div>
+          <div class="size-item">
+            <img src="logo-icon.svg" alt="Logo Icon 32px" width="32" height="32">
+            <div class="size-label">32px</div>
+          </div>
+          <div class="size-item">
+            <img src="favicon.svg" alt="Favicon 16px" width="16" height="16">
+            <div class="size-label">16px (favicon)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full Logo - Light -->
+    <div class="section">
+      <h2>Full Logo - Light Background</h2>
+      <p>Horizontal logo with icon mark and wordmark for headers, marketing, and general use.</p>
+      <div class="preview-card">
+        <img src="logo-full.svg" alt="Full Logo" width="450">
+      </div>
+    </div>
+
+    <!-- Full Logo - Dark -->
+    <div class="section">
+      <h2>Full Logo - Dark Background</h2>
+      <p>White wordmark variant for use on dark/navy backgrounds (hero sections, footers).</p>
+      <div class="preview-card dark">
+        <img src="logo-full-dark.svg" alt="Full Logo Dark" width="450">
+      </div>
+    </div>
+
+    <!-- Color Palette -->
+    <div class="section">
+      <h2>Brand Colors</h2>
+      <p>Core palette used across the TeardownAI brand and website.</p>
+      <div class="color-row">
+        <div class="swatch" style="background: #172554;"><span style="color: white;">#172554</span></div>
+        <div class="swatch" style="background: #1e3a8a;"><span style="color: white;">#1e3a8a</span></div>
+        <div class="swatch" style="background: #2563eb;"><span style="color: white;">#2563eb</span></div>
+        <div class="swatch" style="background: #3b82f6;"><span style="color: white;">#3b82f6</span></div>
+        <div class="swatch" style="background: #60a5fa;"><span style="color: white;">#60a5fa</span></div>
+        <div class="swatch" style="background: #f59e0b;"><span style="color: #78350f;">#f59e0b</span></div>
+        <div class="swatch" style="background: #d97706;"><span style="color: white;">#d97706</span></div>
+        <div class="swatch" style="background: #111827; border: 1px solid #374151;"><span style="color: white;">#111827</span></div>
+      </div>
+    </div>
+
+    <!-- Design Rationale -->
+    <div class="section">
+      <h2>Design Rationale</h2>
+      <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px;">
+          <div>
+            <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #2563eb;">The "T" Letterform</h3>
+            <p style="font-size: 13px; color: #64748b; line-height: 1.5;">Bold white "T" for Teardown. Clean, professional, and immediately recognizable at any size.</p>
+          </div>
+          <div>
+            <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #f59e0b;">Amber Scan Beam</h3>
+            <p style="font-size: 13px; color: #64748b; line-height: 1.5;">Horizontal scanning line represents AI analysis revealing hidden damage - the core value proposition for shops.</p>
+          </div>
+          <div>
+            <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #1e3a8a;">Deep Navy Background</h3>
+            <p style="font-size: 13px; color: #64748b; line-height: 1.5;">Conveys trust, authority, and professionalism - critical for a tool that interfaces with insurance companies.</p>
+          </div>
+          <div>
+            <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #334155;">Pulse Rings</h3>
+            <p style="font-size: 13px; color: #64748b; line-height: 1.5;">Concentric rings on the scan endpoint suggest active, real-time AI processing - the tech-forward identity.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

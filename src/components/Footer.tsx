@@ -51,8 +51,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="mailto:hello@teardownai.com" className="hover:text-white transition-colors">
-                  hello@teardownai.com
+                <a href="mailto:hello@teardownai.net" className="hover:text-white transition-colors">
+                  hello@teardownai.net
                 </a>
               </li>
             </ul>

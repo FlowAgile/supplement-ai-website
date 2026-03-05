@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 120" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="55" y1="10" x2="55" y2="110" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1e3a8a"/>
+      <stop offset="1" stop-color="#172554"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="19" y1="0" x2="92" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f59e0b" stop-opacity="0"/>
+      <stop offset="0.12" stop-color="#f59e0b"/>
+      <stop offset="0.88" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#f59e0b" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon Mark -->
+  <g transform="translate(5, 10)">
+    <!-- Background -->
+    <rect width="100" height="100" rx="18" fill="url(#bg)"/>
+
+    <!-- T letterform -->
+    <rect x="17" y="23" width="66" height="11" rx="2.5" fill="white"/>
+    <rect x="40.5" y="23" width="19" height="55" rx="2.5" fill="white"/>
+
+    <!-- Scan beam -->
+    <rect x="8.5" y="51.5" width="83" height="8" rx="4" fill="#f59e0b" opacity="0.06"/>
+    <rect x="10" y="53" width="80" height="6" rx="3" fill="#f59e0b" opacity="0.1"/>
+    <rect x="11.5" y="54" width="77" height="3" rx="1.5" fill="#f59e0b" opacity="0.2"/>
+    <rect x="12.5" y="54.8" width="75" height="1.6" rx="0.8" fill="#f59e0b"/>
+
+    <!-- Beam endpoints -->
+    <circle cx="14.8" cy="55.6" r="2.4" fill="#f59e0b"/>
+    <circle cx="85.2" cy="55.6" r="2.4" fill="#f59e0b"/>
+    <circle cx="85.2" cy="55.6" r="3.6" fill="none" stroke="#f59e0b" stroke-width="0.5" opacity="0.35"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="122" y="74" font-family="'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif" font-size="44" font-weight="800" letter-spacing="-0.02em">
+    <tspan fill="#111827">Teardown</tspan><tspan fill="#2563eb">AI</tspan>
+  </text>
+</svg>

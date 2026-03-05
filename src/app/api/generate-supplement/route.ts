@@ -95,10 +95,10 @@ export async function POST(request: NextRequest) {
       damageAreas = body.damageAreas;
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const apiKey = process.env.FLOW_TEARDOWN_KEY || process.env.flow_teardown_key;
     if (!apiKey) {
       return NextResponse.json(
-        { error: "API key not configured. Set ANTHROPIC_API_KEY in your .env.local file." },
+        { error: "API key not configured." },
         { status: 500 }
       );
     }

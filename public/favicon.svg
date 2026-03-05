@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <defs>
+    <linearGradient id="fbg" x1="16" y1="0" x2="16" y2="32" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1e3a8a"/>
+      <stop offset="1" stop-color="#172554"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="32" height="32" rx="6" fill="url(#fbg)"/>
+
+  <!-- T letterform (simplified for small size) -->
+  <rect x="6" y="7" width="20" height="4" rx="1" fill="white"/>
+  <rect x="12.5" y="7" width="7" height="19" rx="1" fill="white"/>
+
+  <!-- Scan beam (simplified) -->
+  <rect x="4" y="17" width="24" height="2" rx="1" fill="#f59e0b"/>
+
+  <!-- Beam dots -->
+  <circle cx="5" cy="18" r="1.5" fill="#f59e0b"/>
+  <circle cx="27" cy="18" r="1.5" fill="#f59e0b"/>
+</svg>
