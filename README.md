@@ -21,7 +21,7 @@ The customer-facing web application for Teardown AI. Features a demo page, prici
 
 1. **Clone the repo:**
    ```bash
-   gh repo clone FlowAgile/supplement-ai-website
+   gh repo clone FlowAgile-Team/supplement-ai-website
    cd supplement-ai-website
    ```
 
